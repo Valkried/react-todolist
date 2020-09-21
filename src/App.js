@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Connection from './Connection';
 import Form from './Form';
 import List from './List';
+import SignUpForm from './SignUpForm';
 
 class App extends Component {
     state = {
@@ -15,24 +16,23 @@ class App extends Component {
                 ]
             }
         ],
-        userIndexConnected: -1,
         userLoginConnected: "",
-        userTasksConnected : []
+        userTasksConnected : [],
+        displayLogin: true,
+        btnToggleLoginSignUpContent: 'Je souhaite m\'inscrire'
     };
 
-    checkLogin = (login, password) => {
-        console.log(1);
-        this.state.users.forEach((user, index) => {
-            if (login === user.username && password === user.password) {
-                this.setState({
-                    userIndexConnected: index,
-                    userLoginConnected: user.username,
-                    userTasksConnected: user.tasks
-                });
-            } else {
-                alert("Ce couple identifiant / mot de passe n'existe pas !");
-            }
-        });
+    checkLogin = (username, password) => {
+        const user = this.state.users.find(user => username === user.username && password === user.password);
+
+        if (user) {
+            this.setState({
+                userLoginConnected: user.username,
+                userTasksConnected: user.tasks
+            });
+        } else {
+            alert("Ce couple identifiant / mot de passe n'existe pas !");
+        }
     }
 
     updateUserTasks = () => {
@@ -75,11 +75,39 @@ class App extends Component {
         }
     }
 
+    handleSignUp = (username, password) => {
+        if (this.state.users.find(user => user.username === username)) {
+            alert('Cet utilisateur existe déjà');
+        } else {
+            const newUser = {
+                username: username,
+                password: password,
+                tasks: []
+            }
+
+            this.setState({
+                users: [...this.state.users, newUser],
+                userLoginConnected: username,
+                userTasksConnected: []
+            });
+        }
+
+        this.toggleLoginSignUp();
+    }
+
     handleLogout = () => {
         this.setState({
-            userIndexConnected: -1,
             userLoginConnected: "",
             userTasksConnected : []
+        });
+    }
+
+    toggleLoginSignUp = () => {
+        const displayLogin = !this.state.displayLogin;
+
+        this.setState({
+            displayLogin: displayLogin,
+            btnToggleLoginSignUpContent: displayLogin ? 'Je souhaite m\'inscrire' : 'Je souhaite me connecter'
         });
     }
 
@@ -101,7 +129,20 @@ class App extends Component {
                                 <List tasks={userTasksConnected} checkTask={this.checkTask} />
                             </div>
                             :
-                            <Connection verifyLogin={this.checkLogin} />
+                            <div>
+                                {
+                                    this.state.displayLogin
+                                        ?
+                                        <Connection verifyLogin={this.checkLogin} />
+                                        :
+                                        <SignUpForm handleSignUp={this.handleSignUp} />
+                                }
+                                <div className="row">
+                                    <div className="col s12">
+                                        <button className="btn waves-effect waves-light blue" onClick={this.toggleLoginSignUp}>{this.state.btnToggleLoginSignUpContent}</button>
+                                    </div>
+                                </div>
+                            </div>
                     }
                 </main>
 

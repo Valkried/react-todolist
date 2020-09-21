@@ -22,7 +22,6 @@ class Connection extends Component {
         const {username, password} = this.state;
 
         this.props.verifyLogin(username, password);
-        this.setState(this.initialState);
     }
 
     render() {
@@ -40,6 +39,7 @@ class Connection extends Component {
                     />
                     <label htmlFor="username">Nom d'utilisateur</label>
                 </div>
+
                 <div className="input-field col s12 m6 l4">
                     <input
                         type="password"
@@ -52,6 +52,7 @@ class Connection extends Component {
                     />
                     <label htmlFor="password">Mot de passe</label>
                 </div>
+
                 <div className="input-field col s12 l4">
                     <button type="submit" className="btn waves-effect waves-light">Connexion</button>
                 </div>
