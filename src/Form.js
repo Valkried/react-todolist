@@ -1,26 +1,40 @@
 import React, { Component } from 'react';
 import M from "materialize-css";
-import Todo from "./Todo";
 
-export default class Form extends Component {
+class Form extends Component {
+    state = {
+        inputTaskValue: ''
+    }
+
     componentDidMount() {
         M.AutoInit();
     }
 
-    submitForm = (event) => {
+    handleChange = (event) => {
+        this.setState({ inputTaskValue: event.target.value });
+    }
+
+    handleSubmit = (event) => {
         event.preventDefault();
-        const todo = new Todo(this.props);
-        todo.setContent(event.target.todo.value);
-        this.props.handleSubmit(todo);
+
+        this.props.addTask(this.state.inputTaskValue);
+        this.setState({inputTaskValue: ''});
     }
 
     render() {
-        return (
-            <form onSubmit={this.submitForm} className="row">
+        return(
+            <form onSubmit={this.handleSubmit} className="row">
                 <div className="input-field col s12 l8">
-                    <input type="text" id="todo" />
+                    <input
+                        type="text"
+                        id="todo"
+                        name="todo"
+                        value={this.state.inputTaskValue}
+                        onChange={this.handleChange}
+                    />
                     <label htmlFor="todo">Nouvelle to do</label>
                 </div>
+
                 <div className="input-field col s12 l4">
                     <button type="submit" className="btn waves-effect waves-light">Ajouter</button>
                 </div>
@@ -28,3 +42,5 @@ export default class Form extends Component {
         );
     }
 }
+
+export default Form;

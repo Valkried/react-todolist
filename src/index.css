@@ -25,10 +25,7 @@ footer {
     height: 100px;
     width: 100%;
     position: fixed;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    bottom: 45px;
     background-color: #80cbc4;
 }
 
@@ -51,4 +48,8 @@ footer button.btn-flat {
 
 .collection {
     margin: 0;
+}
+
+.checkedLi {
+    text-decoration: line-through;
 }
