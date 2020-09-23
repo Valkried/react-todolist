@@ -16,14 +16,7 @@ class App extends Component {
                 ]
             }
         ],
-        connectedUser: {
-            username: "julien",
-            password: "azerty",
-            tasks: [
-                { name: "Faire le café", checked: false },
-                { name: "Dire bonjour au voisin", checked: true }
-            ]
-        },
+        connectedUser: {},
         displayLogin: true,
         btnToggleLoginSignUpContent: 'Je souhaite m\'inscrire',
         displayEditUserForm: false
