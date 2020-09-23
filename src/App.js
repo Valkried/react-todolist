@@ -16,8 +16,7 @@ class App extends Component {
                 ]
             }
         ],
-        userLoginConnected: "",
-        userTasksConnected : [],
+        connectedUser: {},
         displayLogin: true,
         btnToggleLoginSignUpContent: 'Je souhaite m\'inscrire'
     };
@@ -26,10 +25,7 @@ class App extends Component {
         const user = this.state.users.find(user => username === user.username && password === user.password);
 
         if (user) {
-            this.setState({
-                userLoginConnected: user.username,
-                userTasksConnected: user.tasks
-            });
+            this.setState({ connectedUser: user });
         } else {
             alert("Ce couple identifiant / mot de passe n'existe pas !");
         }
@@ -39,8 +35,8 @@ class App extends Component {
         this.setState({
             users: this.state.users.map(
                 user => {
-                    if (user.username === this.state.userLoginConnected) {
-                        user.tasks = this.state.userTasksConnected;
+                    if (user.username === this.state.connectedUser.username) {
+                        user.tasks = this.state.connectedUser.tasks;
                     }
                     return user;
                 }
@@ -48,30 +44,39 @@ class App extends Component {
         });
     }
 
-    addTask = (tache) => {
-        this.setState({ userTasksConnected: [...this.state.userTasksConnected, { name: tache, checked: false }] }, this.updateUserTasks);
+    addTask = (task) => {
+        const connectedUser = this.state.connectedUser;
+        connectedUser.tasks.push({ name: task, checked: false });
+        this.setState({ connectedUser: connectedUser }, this.updateUserTasks);
     }
 
     checkTask = (index) => {
-        this.setState({
-            userTasksConnected: this.state.userTasksConnected.map((task, i) => {
-                if (index === i) {
-                    task.checked = !task.checked;
-                }
-                return task;
-            })
-        }, this.updateUserTasks);
+        const connectedUser = this.state.connectedUser;
+        connectedUser.tasks = connectedUser.tasks.map((task, i) => {
+            if (index === i) {
+                task.checked = !task.checked;
+            }
+            return task;
+        });
+
+        this.setState({ connectedUser: connectedUser }, this.updateUserTasks);
     }
 
     removeChecked = () => {
         if (window.confirm("Êtes-vous sûr de vouloir supprimer vos todos accomplies ?")) {
-            this.setState({ userTasksConnected: this.state.userTasksConnected.filter(tache => !tache.checked )}, this.updateUserTasks);
+            const connectedUser = this.state.connectedUser;
+            connectedUser.tasks = this.state.connectedUser.tasks.filter(tache => !tache.checked );
+
+            this.setState({ connectedUser: connectedUser }, this.updateUserTasks);
         }
     }
 
     removeAllTasks = () => {
         if (window.confirm("Êtes-vous sûr de vouloir supprimer toutes vos todos ?")) {
-            this.setState({ userTasksConnected: [] }, this.updateUserTasks);
+            const connectedUser = this.state.connectedUser;
+            connectedUser.tasks = [];
+
+            this.setState({ connectedUser: connectedUser }, this.updateUserTasks);
         }
     }
 
@@ -83,12 +88,11 @@ class App extends Component {
                 username: username,
                 password: password,
                 tasks: []
-            }
+            };
 
             this.setState({
                 users: [...this.state.users, newUser],
-                userLoginConnected: username,
-                userTasksConnected: []
+                connectedUser: newUser
             });
         }
 
@@ -96,9 +100,12 @@ class App extends Component {
     }
 
     handleLogout = () => {
-        this.setState({
-            userLoginConnected: "",
-            userTasksConnected : []
+        this.setState({ connectedUser: {} });
+    }
+
+    removeConnectedUser = () => {
+        this.setState({ users: this.state.users.filter(user => user.username !== this.state.connectedUser.username) }, () => {
+            this.setState({ connectedUser: {} });
         });
     }
 
@@ -112,7 +119,7 @@ class App extends Component {
     }
 
     render() {
-        const {userLoginConnected, userTasksConnected} = this.state;
+        const { connectedUser } = this.state;
 
         return(
             <div>
@@ -122,11 +129,11 @@ class App extends Component {
 
                 <main className="container">
                     {
-                        userLoginConnected !== ""
+                        'username' in connectedUser
                             ?
                             <div>
                                 <Form addTask={this.addTask} />
-                                <List tasks={userTasksConnected} checkTask={this.checkTask} />
+                                <List tasks={connectedUser.tasks} checkTask={this.checkTask} />
                             </div>
                             :
                             <div>
@@ -147,10 +154,11 @@ class App extends Component {
                 </main>
 
                 {
-                    userLoginConnected !== "" &&
+                    'username' in connectedUser &&
                     <footer>
                         <button onClick={this.removeChecked} className="btn-flat waves-effect">Supprimer les "to do" validées</button>
                         <button onClick={this.handleLogout} className="btn waves-effect waves-light">Déconnexion</button>
+                        <button onClick={this.removeConnectedUser} className="btn waves-effect waves-light red darken-2">Supprimer mon compte</button>
                     </footer>
                 }
             </div>
