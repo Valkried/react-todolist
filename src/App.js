@@ -126,23 +126,17 @@ class App extends Component {
         if (this.state.users.find(user => user.username === username)) {
             alert('Cet utilisateur existe déjà');
         } else {
-            const user = {
-                username: username,
-                password: password,
-                tasks: [...this.state.connectedUser.tasks]
-            };
-
-            const users = [...this.state.users];
-            users.splice(
-                this.state.users.indexOf(this.state.users.find(user => user.username === this.state.connectedUser.username)),
-                1,
-                user
-            );
-
             this.setState({
-                users: users,
-                connectedUser: user,
+                users: [...this.state.users].map(user => {
+                    if (user.username === this.state.connectedUser.username) {
+                        user.username = username;
+                        user.password = password;
+                    }
+                    return user;
+                }),
                 displayEditUserForm: false
+            }, () => {
+                this.setState({ connectedUser: this.state.users.find(user => user.username === username) });
             });
         }
     }
