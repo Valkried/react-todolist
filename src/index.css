@@ -13,6 +13,12 @@ h1 {
     margin: 0;
 }
 
+h2 {
+    font-size: 1.5em;
+    text-align: center;
+    margin: 0 auto 50px;
+}
+
 main {
     margin-bottom: 150px !important;
 }
@@ -25,7 +31,7 @@ footer {
     height: 100px;
     width: 100%;
     position: fixed;
-    bottom: 90px;
+    bottom: 135px;
     background-color: #80cbc4;
 }
 
@@ -52,4 +58,8 @@ footer button.btn-flat {
 
 .checkedLi {
     text-decoration: line-through;
+}
+
+.capitalize {
+    text-transform: capitalize;
 }

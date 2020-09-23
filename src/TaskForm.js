@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import M from "materialize-css";
 
-class Form extends Component {
+class TaskForm extends Component {
     state = {
         inputTaskValue: ''
     }
@@ -43,4 +43,4 @@ class Form extends Component {
     }
 }
 
-export default Form;
+export default TaskForm;

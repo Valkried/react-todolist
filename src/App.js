@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import Connection from './Connection';
-import Form from './Form';
+import TaskForm from './TaskForm';
 import List from './List';
 import SignUpForm from './SignUpForm';
 
@@ -16,9 +16,17 @@ class App extends Component {
                 ]
             }
         ],
-        connectedUser: {},
+        connectedUser: {
+            username: "julien",
+            password: "azerty",
+            tasks: [
+                { name: "Faire le café", checked: false },
+                { name: "Dire bonjour au voisin", checked: true }
+            ]
+        },
         displayLogin: true,
-        btnToggleLoginSignUpContent: 'Je souhaite m\'inscrire'
+        btnToggleLoginSignUpContent: 'Je souhaite m\'inscrire',
+        displayEditUserForm: false
     };
 
     checkLogin = (username, password) => {
@@ -100,13 +108,50 @@ class App extends Component {
     }
 
     handleLogout = () => {
-        this.setState({ connectedUser: {} });
+        this.setState({
+            connectedUser: {},
+            displayEditUserForm: false
+        });
     }
 
     removeConnectedUser = () => {
-        this.setState({ users: this.state.users.filter(user => user.username !== this.state.connectedUser.username) }, () => {
-            this.setState({ connectedUser: {} });
-        });
+        if (window.confirm('Souhaitez-vous réellement supprimer votre compte ? Cette action est irréversible.')) {
+            this.setState({ users: this.state.users.filter(user => user.username !== this.state.connectedUser.username) }, () => {
+                this.setState({
+                    connectedUser: {},
+                    displayEditUserForm: false
+                });
+            });
+        }
+    }
+
+    toggleDisplayEditUserForm = () => {
+        this.setState({ displayEditUserForm: !this.state.displayEditUserForm });
+    }
+
+    handleEditUser = (username, password) => {
+        if (this.state.users.find(user => user.username === username)) {
+            alert('Cet utilisateur existe déjà');
+        } else {
+            const user = {
+                username: username,
+                password: password,
+                tasks: this.state.connectedUser.tasks
+            };
+
+            const users = this.state.users;
+            users.splice(
+                this.state.users.indexOf(this.state.users.find(user => user.username === this.state.connectedUser.username)),
+                1,
+                user
+            );
+
+            this.setState({
+                users: users,
+                connectedUser: user,
+                displayEditUserForm: false
+            });
+        }
     }
 
     toggleLoginSignUp = () => {
@@ -119,7 +164,7 @@ class App extends Component {
     }
 
     render() {
-        const { connectedUser } = this.state;
+        const { connectedUser, displayEditUserForm } = this.state;
 
         return(
             <div>
@@ -132,7 +177,12 @@ class App extends Component {
                         'username' in connectedUser
                             ?
                             <div>
-                                <Form addTask={this.addTask} />
+                                <h2>Bonjour <span className="capitalize">{connectedUser.username}</span></h2>
+                                {
+                                    displayEditUserForm &&
+                                    <SignUpForm handleEditUser={this.handleEditUser} connectedUser={this.state.connectedUser}/>
+                                }
+                                <TaskForm addTask={this.addTask} />
                                 <List tasks={connectedUser.tasks} checkTask={this.checkTask} />
                             </div>
                             :
@@ -142,7 +192,7 @@ class App extends Component {
                                         ?
                                         <Connection verifyLogin={this.checkLogin} />
                                         :
-                                        <SignUpForm handleSignUp={this.handleSignUp} />
+                                        <SignUpForm handleSignUp={this.handleSignUp} editMode={false} />
                                 }
                                 <div className="row">
                                     <div className="col s12">
@@ -157,7 +207,10 @@ class App extends Component {
                     'username' in connectedUser &&
                     <footer>
                         <button onClick={this.removeChecked} className="btn-flat waves-effect">Supprimer les "to do" validées</button>
-                        <button onClick={this.handleLogout} className="btn waves-effect waves-light">Déconnexion</button>
+                        <button onClick={this.handleLogout} className="btn waves-effect waves-light teal">Déconnexion</button>
+                        <button onClick={this.toggleDisplayEditUserForm} className="btn waves-effect waves-light green darken-2">
+                            { this.state.displayEditUserForm ? 'Annuler' : 'Modifier mon profil' }
+                        </button>
                         <button onClick={this.removeConnectedUser} className="btn waves-effect waves-light red darken-2">Supprimer mon compte</button>
                     </footer>
                 }

@@ -1,10 +1,19 @@
 import React from 'react';
+import M from "materialize-css";
 
 class SignUpForm extends React.Component {
     state = {
         signUpUsername: '',
         signUpPassword: '',
         signUpPasswordRepeat: ''
+    }
+
+    componentDidMount() {
+        if (this.props.connectedUser) {
+            this.setState({ signUpUsername: this.props.connectedUser.username }, () => {
+                M.updateTextFields();
+            });
+        }
     }
 
     handleChange = (event) => {
@@ -21,7 +30,13 @@ class SignUpForm extends React.Component {
         const { signUpUsername, signUpPassword, signUpPasswordRepeat } = this.state;
 
         if (signUpPassword === signUpPasswordRepeat) {
-            this.props.handleSignUp(signUpUsername, signUpPassword);
+            if (signUpUsername) {
+                this.props.connectedUser
+                    ? this.props.handleEditUser(signUpUsername, signUpPassword)
+                    : this.props.handleSignUp(signUpUsername, signUpPassword);
+            } else {
+                alert('Vous devez entrer un nom d\'utilisateur');
+            }
         } else {
             alert('Les deux mots de passe doivent être similaires');
         }
@@ -70,7 +85,7 @@ class SignUpForm extends React.Component {
                 </div>
 
                 <div className="input-field col s12">
-                    <button type="submit" className="btn waves-effect waves-light">S'inscrire</button>
+                    <button type="submit" className="btn waves-effect waves-light">{ this.props.connectedUser ? 'Modifier le profil' : 'S\'inscrire' }</button>
                 </div>
             </form>
         );
