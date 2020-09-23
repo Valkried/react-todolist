@@ -37,7 +37,7 @@ class App extends Component {
             users: this.state.users.map(
                 user => {
                     if (user.username === this.state.connectedUser.username) {
-                        user.tasks = this.state.connectedUser.tasks;
+                        user.tasks = [...this.state.connectedUser.tasks];
                     }
                     return user;
                 }
@@ -46,13 +46,13 @@ class App extends Component {
     }
 
     addTask = (task) => {
-        const connectedUser = this.state.connectedUser;
+        const connectedUser = { ...this.state.connectedUser };
         connectedUser.tasks.push({ name: task, checked: false });
         this.setState({ connectedUser: connectedUser }, this.updateUserTasks);
     }
 
     checkTask = (index) => {
-        const connectedUser = this.state.connectedUser;
+        const connectedUser = { ...this.state.connectedUser };
         connectedUser.tasks = connectedUser.tasks.map((task, i) => {
             if (index === i) {
                 task.checked = !task.checked;
@@ -65,7 +65,7 @@ class App extends Component {
 
     removeChecked = () => {
         if (window.confirm("Êtes-vous sûr de vouloir supprimer vos todos accomplies ?")) {
-            const connectedUser = this.state.connectedUser;
+            const connectedUser = { ...this.state.connectedUser };
             connectedUser.tasks = this.state.connectedUser.tasks.filter(tache => !tache.checked );
 
             this.setState({ connectedUser: connectedUser }, this.updateUserTasks);
@@ -74,7 +74,7 @@ class App extends Component {
 
     removeAllTasks = () => {
         if (window.confirm("Êtes-vous sûr de vouloir supprimer toutes vos todos ?")) {
-            const connectedUser = this.state.connectedUser;
+            const connectedUser = { ...this.state.connectedUser };
             connectedUser.tasks = [];
 
             this.setState({ connectedUser: connectedUser }, this.updateUserTasks);
@@ -129,10 +129,10 @@ class App extends Component {
             const user = {
                 username: username,
                 password: password,
-                tasks: this.state.connectedUser.tasks
+                tasks: [...this.state.connectedUser.tasks]
             };
 
-            const users = this.state.users;
+            const users = [...this.state.users];
             users.splice(
                 this.state.users.indexOf(this.state.users.find(user => user.username === this.state.connectedUser.username)),
                 1,
